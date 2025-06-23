@@ -1,5 +1,5 @@
 #!/bin/sh
-docker build -f javacpp.Dockerfile --progress=plain -t opencv-arm64-cuda-cross-javacpp . 
+docker build -f javacpp.Dockerfile --progress=plain -t opencv-arm64-cuda-cross-javacpp .  --no-cache 
 docker create --name opencv-arm64-cuda-cross-javacpp-temp opencv-arm64-cuda-cross-javacpp
 rm -rf ./install
 mkdir ./install
