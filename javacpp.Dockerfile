@@ -20,6 +20,7 @@ RUN apt-get update && \
         curl \
         cmake \
         crossbuild-essential-arm64 \
+        openjdk-8-jdk \
         && rm -rf /var/lib/apt/lists/*
 
 # Install CUDA cross compiler
@@ -44,16 +45,23 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/arm
     cp /tmp/deb-extract/usr/local/cuda-12.1/targets/aarch64-linux/lib/libcublasLt.so.12 /usr/local/cuda-12.1/targets/aarch64-linux/lib/ && \
     rm -rf /tmp/deb-extract libcublas-12-1_12.1.0.26-1_arm64.deb
 
-# Download and extract OpenCV and OpenCV contrib
-RUN curl -o opencv.tar.gz -L https://github.com/opencv/opencv/archive/refs/tags/4.7.0.tar.gz && \
-    tar -xvf opencv.tar.gz && \
-    curl -o opencv_contrib.tar.gz -L https://github.com/opencv/opencv_contrib/archive/refs/tags/4.7.0.tar.gz && \
-    tar -xvf opencv_contrib.tar.gz && \
-    rm opencv.tar.gz opencv_contrib.tar.gz
+# Install Maven
+RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz -P /tmp && \
+    tar xf /tmp/apache-maven-3.9.10-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.9.10 /opt/maven && \
+    rm /tmp/apache-maven-3.9.10-bin.tar.gz
 
-# Build OpenCV
-WORKDIR /root/opencv-4.7.0/build
-RUN echo 'set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/")' | \
-    cat - ../cmake/OpenCVDetectCUDA.cmake > temp && mv temp ../cmake/OpenCVDetectCUDA.cmake && \
-    cmake .. -DWITH_JAVA=OFF -DCMAKE_SYSTEM_PROCESSOR=aarch64 -DCMAKE_LIBRARY_ARCHITECTURE=aarch64-linux-gnu -DCMAKE_TOOLCHAIN_FILE=../platforms/linux/aarch64-gnu.toolchain.cmake -DCMAKE_BUILD_TYPE=Release -DWITH_CUDA=ON -DCUDA_ARCH_BIN=7.2 -DCUDA_ARCH_PTX="" -DOPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-4.7.0/modules -DCUDA_TOOLKIT_ROOT_DIR=/usr/local/cuda-12.1/targets/aarch64-linux -DCMAKE_LIBRARY_PATH=/usr/local/cuda-12.1/targets/aarch64-linux/lib -DCMAKE_EXE_LINKER_FLAGS="-Wl,-rpath-link,/usr/local/cuda-12.1/targets/aarch64-linux/lib" -DCMAKE_SHARED_LINKER_FLAGS="-Wl,-rpath-link,/usr/local/cuda-12.1/targets/aarch64-linux/lib" -DBUILD_EXAMPLES=OFF -DBUILD_TESTS=OFF && \
-    make -j22
+ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+ENV JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include
+ENV JAVA_INCLUDE_PATH2=/usr/lib/jvm/java-8-openjdk-amd64/include/linux
+ENV M2_HOME=/opt/maven
+ENV MAVEN_HOME=/opt/maven
+ENV PATH=$M2_HOME/bin:$PATH
+
+# Build javacpp-presets/opencv
+WORKDIR /root
+RUN git clone https://github.com/bytedeco/javacpp-presets
+WORKDIR /root/javacpp-presets
+RUN git checkout 1.5.9
+RUN curl -L "https://gist.githubusercontent.com/ds58/c9490e5a9b5432d755a1e270ec70bb00/raw/6d02375541915d094b1490236f341f4481b64a7d/cppbuild.sh" -o opencv/cppbuild.sh
+RUN mvn clean install -Djavacpp.platform.compiler=aarch64-linux-gnu-g++ -Djavacpp.platform.c.compiler=aarch64-linux-gnu-gcc -Djavacpp.platform.extension=-gpu -Djavacpp.platform=linux-arm64 --projects .,opencv
