@@ -46,10 +46,10 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/arm
     rm -rf /tmp/deb-extract libcublas-12-1_12.1.0.26-1_arm64.deb
 
 # Install Maven
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.10/binaries/apache-maven-3.9.10-bin.tar.gz -P /tmp && \
-    tar xf /tmp/apache-maven-3.9.10-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.9.10 /opt/maven && \
-    rm /tmp/apache-maven-3.9.10-bin.tar.gz
+RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.tar.gz -P /tmp && \
+    tar xf /tmp/apache-maven-3.9.11-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.9.11 /opt/maven && \
+    rm /tmp/apache-maven-3.9.11-bin.tar.gz
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include
@@ -63,5 +63,5 @@ WORKDIR /root
 RUN git clone https://github.com/bytedeco/javacpp-presets
 WORKDIR /root/javacpp-presets
 RUN git checkout 1.5.9
-RUN curl -L "https://gist.githubusercontent.com/ds58/c9490e5a9b5432d755a1e270ec70bb00/raw/6d02375541915d094b1490236f341f4481b64a7d/cppbuild.sh" -o opencv/cppbuild.sh
+RUN curl -L "https://gist.githubusercontent.com/ds58/c9490e5a9b5432d755a1e270ec70bb00/raw/a31528e2282596d959678db703f2fc0d9bbf66eb/cppbuild.sh" -o opencv/cppbuild.sh
 RUN mvn clean install -Djavacpp.platform.compiler=aarch64-linux-gnu-g++ -Djavacpp.platform.c.compiler=aarch64-linux-gnu-gcc -Djavacpp.platform.extension=-gpu -Djavacpp.platform=linux-arm64 --projects .,opencv
