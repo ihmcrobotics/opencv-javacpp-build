@@ -63,5 +63,5 @@ WORKDIR /root
 RUN git clone https://github.com/bytedeco/javacpp-presets
 WORKDIR /root/javacpp-presets
 RUN git checkout 1.5.9
-RUN curl -L "https://gist.githubusercontent.com/ds58/c9490e5a9b5432d755a1e270ec70bb00/raw/a31528e2282596d959678db703f2fc0d9bbf66eb/cppbuild.sh" -o opencv/cppbuild.sh
+RUN curl -L "https://gist.githubusercontent.com/TomaszTB/8b2e9a55928c886f7fadd8670bcdf632/raw/4ef468ab4caa6bc53437ccde919503caa914f964/cppbuild.sh" -o opencv/cppbuild.sh
 RUN mvn clean install -Djavacpp.platform.compiler=aarch64-linux-gnu-g++ -Djavacpp.platform.c.compiler=aarch64-linux-gnu-gcc -Djavacpp.platform.extension=-gpu -Djavacpp.platform=linux-arm64 --projects .,opencv
