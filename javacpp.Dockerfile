@@ -1,4 +1,4 @@
-FROM nvidia/cuda:12.1.0-cudnn8-devel-ubuntu20.04
+FROM nvidia/cuda:12.6.1-cudnn-devel-ubuntu22.04
 
 ENV ARCH=aarch64 \
     HOSTCC=gcc \
@@ -15,8 +15,8 @@ RUN apt-get update && \
         wget \
         zip \
         unzip \
-        python2.7 \
-        python-is-python2 \
+        python3 \
+        python-is-python3 \
         curl \
         cmake \
         crossbuild-essential-arm64 \
@@ -24,26 +24,26 @@ RUN apt-get update && \
         && rm -rf /var/lib/apt/lists/*
 
 # Install CUDA cross compiler
-RUN wget https://developer.download.nvidia.com/compute/cuda/12.1.0/local_installers/cuda-repo-cross-aarch64-ubuntu2004-12-1-local_12.1.0-1_all.deb && \
-    dpkg -i cuda-repo-cross-aarch64-ubuntu2004-12-1-local_12.1.0-1_all.deb && \
-    cp /var/cuda-repo-cross-aarch64-ubuntu2004-12-1-local/cuda-*-keyring.gpg /usr/share/keyrings/ && \
+RUN wget https://developer.download.nvidia.com/compute/cuda/12.6.1/local_installers/cuda-repo-cross-aarch64-ubuntu2204-12-6-local_12.6.1-1_all.deb && \
+    dpkg -i cuda-repo-cross-aarch64-ubuntu2204-12-6-local_12.6.1-1_all.deb && \
+    cp /var/cuda-repo-cross-aarch64-ubuntu2204-12-6-local/cuda-*-keyring.gpg /usr/share/keyrings/ && \
     apt-get update && \
     apt-get -y install cuda-cross-aarch64 && \
-    rm cuda-repo-cross-aarch64-ubuntu2004-12-1-local_12.1.0-1_all.deb
+    rm cuda-repo-cross-aarch64-ubuntu2204-12-6-local_12.6.1-1_all.deb
 
-# Install cuDNN8 cross
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/cross-linux-sbsa/libcudnn8-cross-sbsa_8.9.3.28-1+cuda12.1_all.deb && \
-    dpkg -i libcudnn8-cross-sbsa_8.9.3.28-1+cuda12.1_all.deb && \
-    rm libcudnn8-cross-sbsa_8.9.3.28-1+cuda12.1_all.deb
+# Install cuDNN9 cross
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/cross-linux-aarch64/libcudnn9-cross-aarch64-cuda-12_9.3.0.75-1_all.deb && \
+    dpkg -i libcudnn9-cross-aarch64-cuda-12_9.3.0.75-1_all.deb && \
+    rm libcudnn9-cross-aarch64-cuda-12_9.3.0.75-1_all.deb
 
 # Install cuBLAS
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2004/arm64/libcublas-12-1_12.1.0.26-1_arm64.deb && \
-    dpkg-deb -x libcublas-12-1_12.1.0.26-1_arm64.deb /tmp/deb-extract && \
-    cp /tmp/deb-extract/usr/local/cuda-12.1/targets/aarch64-linux/lib/libcublas.so.12.1.0.26 /usr/local/cuda-12.1/targets/aarch64-linux/lib/ && \
-    cp /tmp/deb-extract/usr/local/cuda-12.1/targets/aarch64-linux/lib/libcublas.so.12 /usr/local/cuda-12.1/targets/aarch64-linux/lib/ && \
-    cp /tmp/deb-extract/usr/local/cuda-12.1/targets/aarch64-linux/lib/libcublasLt.so.12.1.0.26 /usr/local/cuda-12.1/targets/aarch64-linux/lib/ && \
-    cp /tmp/deb-extract/usr/local/cuda-12.1/targets/aarch64-linux/lib/libcublasLt.so.12 /usr/local/cuda-12.1/targets/aarch64-linux/lib/ && \
-    rm -rf /tmp/deb-extract libcublas-12-1_12.1.0.26-1_arm64.deb
+RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/libcublas-12-6_12.6.1.4-1_arm64.deb && \
+    dpkg-deb -x libcublas-12-6_12.6.1.4-1_arm64.deb /tmp/deb-extract && \
+    cp /tmp/deb-extract/usr/local/cuda-12.6/targets/aarch64-linux/lib/libcublas.so.12.6.1.4 /usr/local/cuda-12.6/targets/aarch64-linux/lib/ && \
+    cp /tmp/deb-extract/usr/local/cuda-12.6/targets/aarch64-linux/lib/libcublas.so.12 /usr/local/cuda-12.6/targets/aarch64-linux/lib/ && \
+    cp /tmp/deb-extract/usr/local/cuda-12.6/targets/aarch64-linux/lib/libcublasLt.so.12.6.1.4 /usr/local/cuda-12.6/targets/aarch64-linux/lib/ && \
+    cp /tmp/deb-extract/usr/local/cuda-12.6/targets/aarch64-linux/lib/libcublasLt.so.12 /usr/local/cuda-12.6/targets/aarch64-linux/lib/ && \
+    rm -rf /tmp/deb-extract libcublas-12-6_12.6.1.4-1_arm64.deb
 
 # Install Maven
 RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.tar.gz -P /tmp && \
@@ -58,10 +58,15 @@ ENV M2_HOME=/opt/maven
 ENV MAVEN_HOME=/opt/maven
 ENV PATH=$M2_HOME/bin:$PATH
 
-# Build javacpp-presets/opencv
+# Clone javacpp-presets and checkout tag 1.5.11
 WORKDIR /root
 RUN git clone https://github.com/bytedeco/javacpp-presets
 WORKDIR /root/javacpp-presets
-RUN git checkout 1.5.9
-RUN curl -L "https://gist.githubusercontent.com/ds58/c9490e5a9b5432d755a1e270ec70bb00/raw/a31528e2282596d959678db703f2fc0d9bbf66eb/cppbuild.sh" -o opencv/cppbuild.sh
+RUN git checkout 1.5.11
+
+# Copy over some files
+COPY cppbuild.sh opencv
+COPY opencv-cudnn-version.patch opencv
+
+# Build javacpp-presets/opencv
 RUN mvn clean install -Djavacpp.platform.compiler=aarch64-linux-gnu-g++ -Djavacpp.platform.c.compiler=aarch64-linux-gnu-gcc -Djavacpp.platform.extension=-gpu -Djavacpp.platform=linux-arm64 --projects .,opencv
