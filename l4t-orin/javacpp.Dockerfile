@@ -66,7 +66,7 @@ RUN git checkout 1.5.11
 
 # Copy over some files
 COPY cppbuild_1.5.11.sh.diff opencv
-RUN patch cppbuild.sh < cppbuild_1.5.11.sh.diff
+RUN patch opencv/cppbuild.sh < opencv/cppbuild_1.5.11.sh.diff
 COPY opencv-cudnn-version.patch opencv
 
 # Build javacpp-presets/opencv
