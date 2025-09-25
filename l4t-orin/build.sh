@@ -11,7 +11,7 @@ rm -rf $BUILD_DIR
 mkdir -p $BUILD_DIR
 pushd $BUILD_DIR
 
-cp $REPO_DIR/cppbuild_1.5.11.sh.diff .
+cp ../cppbuild_1.5.11.sh.diff .
 cp $REPO_DIR/l4t-orin/javacpp.Dockerfile .
 cp $REPO_DIR/l4t-orin/opencv-cudnn-version.patch .
 
