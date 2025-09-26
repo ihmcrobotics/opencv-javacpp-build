@@ -15,7 +15,7 @@ cp ../cppbuild_1.5.11.sh.diff .
 cp $REPO_DIR/l4t-orin/javacpp.Dockerfile .
 cp $REPO_DIR/l4t-orin/opencv-cudnn-version.patch .
 
-docker build -f javacpp.Dockerfile --progress=plain -t l4t-orin-opencv-javacpp .
+docker build -f javacpp.Dockerfile --progress=plain --no-cache -t l4t-orin-opencv-javacpp .
 docker create --name l4t-orin-opencv-javacpp-temp l4t-orin-opencv-javacpp
 
 docker cp l4t-orin-opencv-javacpp-temp:/root/.m2 $INSTALL_DIR
