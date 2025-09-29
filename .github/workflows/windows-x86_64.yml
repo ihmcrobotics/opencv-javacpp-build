@@ -20,6 +20,7 @@ jobs:
           java-version: '8'
       - uses: actions/checkout@v4
       - name: Compile native library
+        shell: bash
         run: |
           cd windows-x86_64
-          bash.exe build.sh
+          ./build.sh
