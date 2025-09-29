@@ -12,6 +12,7 @@ jobs:
         with:
           cuda: '12.9.0'
       - name: Install cuDNN
+        shell: cmd
         run: |
           curl -LO https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip
           unzip cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip
