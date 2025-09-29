@@ -1,0 +1,25 @@
+name: Build javacpp-presets/opencv for Windows x86_64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: [windows-2022]
+    steps:
+      - uses: Jimver/cuda-toolkit@v0.2.15
+        id: cuda-toolkit
+        with:
+          cuda: '12.9.0'
+          method: 'network'
+      - uses: ilammy/msvc-dev-cmd@v1
+        with:
+          vsversion: 2019
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - name: Compile native library
+        run: |
+          cd windows-x86_64
+          bash.exe build.sh
