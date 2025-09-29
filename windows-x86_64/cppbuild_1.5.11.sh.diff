@@ -1,0 +1,75 @@
+79a80,81
+> patch -Np1 < ../../../opencv-cudnn-version.patch
+> patch -Np1 < ../../../private.cuda.hpp.diff
+126c128
+< BUILD_X="-DBUILD_ANDROID_EXAMPLES=OFF -DBUILD_ANDROID_PROJECTS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_JASPER=ON -DBUILD_JPEG=ON -DBUILD_WEBP=ON -DBUILD_OPENEXR=ON -DBUILD_PNG=ON -DBUILD_TIFF=ON -DBUILD_ZLIB=ON -DBUILD_opencv_java=ON -DBUILD_opencv_objc=OFF -DBUILD_opencv_python2=OFF -DBUILD_opencv_python3=ON -DOPENCV_SKIP_PYTHON_LOADER=ON -DPYTHON3_EXECUTABLE=$PYTHON3_EXECUTABLE -DPYTHON3_INCLUDE_DIR=$PYTHON3_INCLUDE_DIR -DPYTHON3_LIBRARY=$PYTHON3_LIBRARY -DPYTHON3_PACKAGES_PATH=$PYTHON3_PACKAGES_PATH -DPYTHON3_NUMPY_INCLUDE_DIRS=$NUMPY_PATH/python/numpy/_core/include/ -DBUILD_opencv_gapi=OFF -DBUILD_opencv_hdf=OFF -DBUILD_opencv_sfm=OFF -DBUILD_opencv_img_hash=ON"
+---
+> BUILD_X="-DBUILD_ANDROID_EXAMPLES=OFF -DBUILD_ANDROID_PROJECTS=OFF -DBUILD_TESTS=OFF -DBUILD_PERF_TESTS=OFF -DBUILD_JASPER=ON -DBUILD_JPEG=ON -DBUILD_WEBP=ON -DBUILD_OPENEXR=ON -DBUILD_PNG=ON -DBUILD_TIFF=ON -DBUILD_ZLIB=ON -DBUILD_opencv_java=OFF -DBUILD_opencv_objc=OFF -DBUILD_opencv_python2=OFF -DBUILD_opencv_python3=ON -DOPENCV_SKIP_PYTHON_LOADER=ON -DPYTHON3_EXECUTABLE=$PYTHON3_EXECUTABLE -DPYTHON3_INCLUDE_DIR=$PYTHON3_INCLUDE_DIR -DPYTHON3_LIBRARY=$PYTHON3_LIBRARY -DPYTHON3_PACKAGES_PATH=$PYTHON3_PACKAGES_PATH -DPYTHON3_NUMPY_INCLUDE_DIRS=$NUMPY_PATH/python/numpy/_core/include/ -DBUILD_opencv_gapi=OFF -DBUILD_opencv_hdf=OFF -DBUILD_opencv_sfm=OFF -DBUILD_opencv_img_hash=ON"
+140c142
+<     GPU_FLAGS="-DWITH_CUDA=ON -DWITH_CUDNN=ON -DOPENCV_DNN_CUDA=ON -DCUDA_VERSION=12.6 -DCUDNN_VERSION=9.3 -DCUDA_ARCH_BIN='5.0;6.0;7.0;8.0;9.0' -DCUDA_ARCH_PTX='' -DCUDA_NVCC_FLAGS=--expt-relaxed-constexpr -DCUDA_nppicom_LIBRARY="
+---
+>     GPU_FLAGS="-DWITH_CUDA=ON -DWITH_CUDNN=ON -DOPENCV_DNN_CUDA=ON -DCUDA_VERSION=12.9 -DCUDNN_VERSION=9.9 -DCUDA_ARCH_BIN='6.1;7.5;8.6;8.9;12.0' -DCUDA_ARCH_PTX='' -DCUDA_NVCC_FLAGS=--expt-relaxed-constexpr -DCUDA_nppicom_LIBRARY= -DWITH_NVCUVID=OFF -DWITH_NVCUVENC=OFF"
+280c282
+<         cp ../share/java/opencv4/libopencv_java.a ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.a ../lib
+291c293
+<         cp ../share/java/opencv4/libopencv_java.a ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.a ../lib
+302c304
+<         cp ../share/java/opencv4/libopencv_java.so ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.so ../lib
+314c316
+<         cp ../share/java/opencv4/libopencv_java.so ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.so ../lib
+326c328
+<         cp ../share/java/opencv4/libopencv_java.so ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.so ../lib
+338c340
+<         cp ../share/java/opencv4/libopencv_java.so ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.so ../lib
+350c352
+<         cp ../share/java/opencv4/libopencv_java.so ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.so ../lib
+368c370
+<         cp ../share/java/opencv4/libopencv_java.so ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.so ../lib
+380c382
+<         cp ../share/java/opencv4/libopencv_java.so ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.so ../lib
+394c396
+<         cp ../share/java/opencv4/libopencv_java.dylib ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.dylib ../lib
+408c410
+<         cp ../share/java/opencv4/libopencv_java.dylib ../lib
+---
+>         # cp ../share/java/opencv4/libopencv_java.dylib ../lib
+459,467c461,469
+< cp -r modules/java_bindings_generator/gen/java ..
+< cp -r modules/java_bindings_generator/gen/android/java ..
+< # remove files that require the Android SDK to compile
+< rm ../java/org/opencv/android/AsyncServiceHelper.java || true
+< rm ../java/org/opencv/android/CameraActivity.java
+< rm ../java/org/opencv/android/CameraBridgeViewBase.java
+< rm ../java/org/opencv/android/JavaCameraView.java
+< rm ../java/org/opencv/android/OpenCVLoader.java
+< rm ../java/*opencv* || true # remove stray binaries
+---
+> # cp -r modules/java_bindings_generator/gen/java ..
+> # cp -r modules/java_bindings_generator/gen/android/java ..
+> # # remove files that require the Android SDK to compile
+> # rm ../java/org/opencv/android/AsyncServiceHelper.java || true
+> # rm ../java/org/opencv/android/CameraActivity.java
+> # rm ../java/org/opencv/android/CameraBridgeViewBase.java
+> # rm ../java/org/opencv/android/JavaCameraView.java
+> # rm ../java/org/opencv/android/OpenCVLoader.java
+> # rm ../java/*opencv* || true # remove stray binaries
