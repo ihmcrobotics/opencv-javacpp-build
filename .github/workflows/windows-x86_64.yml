@@ -11,6 +11,13 @@ jobs:
         id: cuda-toolkit
         with:
           cuda: '12.9.0'
+      - name: Install cuDNN
+        run: |
+          curl -LO https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip
+          unzip cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip
+          move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\bin\*.dll "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin"
+          move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\include\*.h "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\include"
+          move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\lib\x64\*.lib "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\lib\x64"
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           vsversion: 2022
