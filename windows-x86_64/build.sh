@@ -15,10 +15,12 @@ git clone https://github.com/bytedeco/javacpp-presets
 cd javacpp-presets
 git checkout 1.5.11
 
+cp ../../javacpp-presets_pom.xml.diff .
 cp ../../cppbuild_1.5.11.sh.diff opencv
 cp ../../opencv-cudnn-version.patch opencv
 cp ../../private.cuda.hpp.diff opencv
 
+patch pom.xml < javacpp-presets_pom.xml.diff
 patch opencv/cppbuild.sh < opencv/cppbuild_1.5.11.sh.diff
 
 # Remap the group ID for the opencv maven project
