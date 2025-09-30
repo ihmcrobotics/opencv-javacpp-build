@@ -31,4 +31,4 @@ jobs:
         shell: cmd
         run: |
           cd windows-x86_64
-          C:\msys64\usr\bin\bash build.sh
+          C:\Program Files\Git\bin\bash.exe build.sh
