@@ -11,5 +11,5 @@ IHMC Robotics javacpp-presets/opencv builds
 ## Patches
 Patches needed for OpenCV 4.10.0 with CUDA 12.9
 
-https://github.com/opencv/opencv/pull/27522
-https://github.com/opencv/opencv/pull/27288
+- https://github.com/opencv/opencv/pull/27522
+- https://github.com/opencv/opencv/pull/27288
