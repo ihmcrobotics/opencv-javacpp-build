@@ -1,4 +1,4 @@
-name: Build javacpp-presets/opencv for Linux x86_64
+name: Build javacpp-presets/opencv for L4T Orin
 
 on:
   workflow_dispatch:
@@ -10,5 +10,5 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build
         run: |
-          cd linux-x86_64
+          cd l4t-orin
           bash build.sh
