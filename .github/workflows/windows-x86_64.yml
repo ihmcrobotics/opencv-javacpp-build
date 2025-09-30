@@ -19,7 +19,6 @@ jobs:
           move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\bin*.dll "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin"
           move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\include*.h "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\include"
           move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\lib\x64*.lib "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\lib\x64"
-          # Cleanup
           "C:\Program Files\Git\bin\bash.exe" -c "rm -Rf ./cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip ./cudnn-windows-x86_64-9.9.0.52_cuda12-archive"
       - uses: ilammy/msvc-dev-cmd@v1
         with:
