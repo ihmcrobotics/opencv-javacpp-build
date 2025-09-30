@@ -19,6 +19,7 @@ cp ../../javacpp-presets_pom.xml.diff .
 cp ../../cppbuild_1.5.11.sh.diff opencv
 cp ../../opencv-cudnn-version.patch opencv
 cp ../../private.cuda.hpp.diff opencv
+cp ../../OpenCVDetectCUDAUtils.cmake.diff opencv
 
 patch pom.xml < javacpp-presets_pom.xml.diff
 patch opencv/cppbuild.sh < opencv/cppbuild_1.5.11.sh.diff
