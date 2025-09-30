@@ -1,0 +1,26 @@
+name: Build javacpp-presets/opencv for Linux x86_64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: [ubuntu-24.04]
+    steps:
+      - uses: Jimver/cuda-toolkit@v0.2.24
+        id: cuda-toolkit
+        with:
+          cuda: '12.9.0'
+      - name: Install cuDNN
+        run: |
+          wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2404/x86_64/cudnn9-cuda-12-9_9.9.0.52-1_amd64.deb
+          sudo dpkg -i cudnn9-cuda-12-9_9.9.0.52-1_amd64.deb
+      - uses: actions/setup-java@v5
+        with:
+          distribution: 'temurin'
+          java-version: '8'
+      - uses: actions/checkout@v4
+      - name: Build javacpp-presets/opencv
+        run: |
+          cd linux-x86_64
+          bash build.sh
