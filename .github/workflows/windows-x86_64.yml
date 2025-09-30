@@ -21,6 +21,7 @@ jobs:
           move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\lib\x64\*.lib "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\lib\x64"
       - name: Remove broken stuff
         shell: cmd
+        run: |
           echo Removing broken stuff from WSL, MSYS2, etc
           rm "C:/msys64/usr/bin/curl.exe" "C:/msys64/mingw32/bin/curl.exe" "C:/msys64/mingw64/bin/curl.exe"
           rm "C:/WINDOWS/system32/bash.EXE" "C:/msys64/usr/bin/link.exe" "C:/msys64/usr/bin/timeout.exe" "C:/msys64/usr/bin/python.exe" "C:/msys64/usr/bin/python3.exe"
