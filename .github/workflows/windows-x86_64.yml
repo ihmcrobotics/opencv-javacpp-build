@@ -30,9 +30,9 @@ jobs:
         shell: powershell
         run: |
           Set-Location D:\
-          git clone https://github.com/${{ github.repository }} a
+          git clone https://github.com/${{ github.repository }} b
       - name: Build javacpp-presets/opencv
         shell: cmd
         run: |
-          cd D:\a\windows-x86_64
+          cd D:\b\windows-x86_64
           "C:\Program Files\Git\bin\bash.exe" build.sh
