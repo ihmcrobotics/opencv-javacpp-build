@@ -42,6 +42,7 @@ RUN git checkout 1.5.11
 # Copy over extra patch files
 COPY opencv-cudnn-version.patch opencv
 COPY private.cuda.hpp.diff opencv
+COPY OpenCVDetectCUDAUtils.cmake.diff opencv
 
 # Copy and patch cppbuild.sh diff
 COPY cppbuild_1.5.11.sh.diff opencv
