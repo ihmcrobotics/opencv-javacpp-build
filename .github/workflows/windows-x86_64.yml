@@ -12,14 +12,16 @@ jobs:
         with:
           cuda: '12.9.0'
       - name: Install cuDNN
-        shell: cmd
+        shell: bash
         run: |
-          curl -LO https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip
-          unzip cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip
-          move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\bin*.dll "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\bin"
-          move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\include*.h "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\include"
-          move cudnn-windows-x86_64-9.9.0.52_cuda12-archive\lib\x64*.lib "%ProgramFiles%\NVIDIA GPU Computing Toolkit\CUDA\v12.9\lib\x64"
-          "C:\Program Files\Git\bin\bash.exe" -c "rm -Rf ./cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip ./cudnn-windows-x86_64-9.9.0.52_cuda12-archive"
+          CUDNN_URL="https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip"
+          curl -L -o cudnn.zip "$CUDNN_URL"
+          unzip cudnn.zip -d cudnn-temp
+          CUDA_PATH="/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.9"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/bin/*.dll "$CUDA_PATH/bin"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/include/*.h "$CUDA_PATH/include"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/lib/x64/*.lib "$CUDA_PATH/lib/x64"
+          rm -rf cudnn.zip cudnn-temp
       - uses: ilammy/msvc-dev-cmd@v1
         with:
           vsversion: 2022
