@@ -23,8 +23,6 @@ jobs:
           cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/lib/x64/*.lib "$CUDA_PATH/lib/x64"
           rm -rf cudnn.zip cudnn-temp
       - uses: ilammy/msvc-dev-cmd@v1
-        with:
-          vsversion: 2019
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
