@@ -54,6 +54,18 @@
 <         cp ../share/java/opencv4/libopencv_java.dylib ../lib
 ---
 >         # cp ../share/java/opencv4/libopencv_java.dylib ../lib
+442,443c445,446
+<         cp -r ../x64/vc16/lib ..
+<         cp -r ../x64/vc16/bin ..
+---
+>         cp -r ../x64/vc??/lib ..
+>         cp -r ../x64/vc??/bin ..
+446,447c449,450
+<         sedinplace "s:/x64/vc16/lib/:/lib/:g" ../x64/vc16/lib/OpenCVModules-release.cmake
+<         sedinplace "s:/x64/vc16/bin/:/:g" ../x64/vc16/lib/OpenCVModules-release.cmake
+---
+>         sedinplace "s:/x64/vc../lib/:/lib/:g" ../x64/vc??/lib/OpenCVModules-release.cmake
+>         sedinplace "s:/x64/vc../bin/:/:g" ../x64/vc??/lib/OpenCVModules-release.cmake
 459,467c462,470
 < cp -r modules/java_bindings_generator/gen/java ..
 < cp -r modules/java_bindings_generator/gen/android/java ..
