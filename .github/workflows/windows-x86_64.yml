@@ -5,7 +5,7 @@ on:
 
 jobs:
   build:
-    runs-on: [windows-2022]
+    runs-on: [windows-2019]
     steps:
       - uses: Jimver/cuda-toolkit@v0.2.24
         id: cuda-toolkit
@@ -24,7 +24,7 @@ jobs:
           rm -rf cudnn.zip cudnn-temp
       - uses: ilammy/msvc-dev-cmd@v1
         with:
-          vsversion: 2022
+          vsversion: 2019
       - uses: actions/setup-java@v5
         with:
           distribution: 'temurin'
