@@ -46,10 +46,10 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm
     rm -rf /tmp/deb-extract libcublas-12-6_12.6.1.4-1_arm64.deb
 
 # Install Maven
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.11/binaries/apache-maven-3.9.11-bin.tar.gz -P /tmp && \
-    tar xf /tmp/apache-maven-3.9.11-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.9.11 /opt/maven && \
-    rm /tmp/apache-maven-3.9.11-bin.tar.gz
+RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.12/binaries/apache-maven-3.9.12-bin.tar.gz -P /tmp && \
+    tar xf /tmp/apache-maven-3.9.12-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.9.12 /opt/maven && \
+    rm /tmp/apache-maven-3.9.12-bin.tar.gz
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include
