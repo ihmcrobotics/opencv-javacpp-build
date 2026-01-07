@@ -57,4 +57,4 @@ RUN sed -i.bak '12s/.*/  <groupId>us.ihmc<\/groupId>/' opencv/pom.xml
 RUN sed -i "s|<version>4.10.0-\${project.parent.version}</version>|<version>4.10.0-\${project.parent.version}-$(date +%Y%m%d)-ihmc</version>|" opencv/pom.xml
 
 # Build javacpp-presets/opencv
-RUN mvn clean install -Djavacpp.platform.extension= -Djavacpp.platform=linux-x86_64 --projects .,opencv
+RUN mvn clean install -Djavacpp.platform.extension=-gpu -Djavacpp.platform=linux-x86_64 --projects .,opencv
