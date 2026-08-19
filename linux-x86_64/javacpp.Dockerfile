@@ -23,10 +23,10 @@ RUN apt-get update && \
         && rm -rf /var/lib/apt/lists/*
 
 # Install Maven
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.12/binaries/apache-maven-3.9.12-bin.tar.gz -P /tmp && \
-    tar xf /tmp/apache-maven-3.9.12-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.9.12 /opt/maven && \
-    rm /tmp/apache-maven-3.9.12-bin.tar.gz
+RUN wget -q https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz -P /tmp && \
+    tar xf /tmp/apache-maven-3.9.9-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.9.9 /opt/maven && \
+    rm /tmp/apache-maven-3.9.9-bin.tar.gz
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include
@@ -50,11 +50,13 @@ COPY OpenCVDetectCUDAUtils.cmake.diff opencv
 COPY cppbuild_1.5.11.sh.diff opencv
 RUN patch opencv/cppbuild.sh < opencv/cppbuild_1.5.11.sh.diff
 
+ARG VERSION_DATE=20260819
+
 # Remap the group ID for the opencv maven project
 RUN sed -i.bak '12s/.*/  <groupId>us.ihmc<\/groupId>/' opencv/pom.xml
 
 # Replace the version
-RUN sed -i "s|<version>4.10.0-\${project.parent.version}</version>|<version>4.10.0-\${project.parent.version}-$(date +%Y%m%d)-ihmc</version>|" opencv/pom.xml
+RUN sed -i "s|<version>4.10.0-\${project.parent.version}</version>|<version>4.10.0-\${project.parent.version}-${VERSION_DATE}-ihmc</version>|" opencv/pom.xml
 
 # Build javacpp-presets/opencv
 RUN mvn clean install -Djavacpp.platform.extension= -Djavacpp.platform=linux-x86_64 --projects .,opencv

@@ -18,6 +18,14 @@ Patches needed for OpenCV 4.10.0 with CUDA 12.9
 - https://github.com/opencv/opencv/pull/27288
 
 ## Building Notes
+Linux arm64 / L4T — Ubuntu 22.04's GCC 11 emits outline-atomics (`__aarch64_ldadd4_acq_rel`).
+Java cannot resolve those helpers when it `dlopen`s the JNI `.so` on the robot. Both ARM
+Dockerfiles wrap `aarch64-linux-gnu-gcc/g++` with `-mno-outline-atomics`. Rebuild L4T Orin
+after changing that, publish the new dated artifact, and delete `~/.javacpp/cache` on the
+robot so it does not keep the old `linux-arm64-gpu` jar.
+
 Windows - You must shorten the build path as much as possible (e.g. clone this repo into `C:\a`). Otherwise you'll get a CMake issue where it'll run the configuration in a loop.
 
-Windows - You must install cuDNN using the method found in the windows-x86_64 GitHub workflow. Using the cuDNN installer will not work, CMake will not find it.
+Windows - You must install cuDNN using the method found in `.github/workflows/build.yml`. Using the cuDNN installer will not work, CMake will not find it.
+
+GitHub: run **Build OpenCV JavaCPP** (`workflow_dispatch`) and pass `version_date` (YYYYMMDD). Each platform uploads a Maven-layout artifact.

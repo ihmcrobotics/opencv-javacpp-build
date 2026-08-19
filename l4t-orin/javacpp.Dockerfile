@@ -23,8 +23,20 @@ RUN apt-get update && \
         openjdk-8-jdk \
         && rm -rf /var/lib/apt/lists/*
 
+# GCC 10+ on Ubuntu 22.04 emits outline-atomics helpers (__aarch64_ldadd4_acq_rel).
+# Java loads the JNI .so files without those libgcc symbols, so the process dies on
+# the Orin. Force the cross compilers to use in-line LL/SC instead.
+# https://github.com/bytedeco/javacpp-presets/issues/1671
+RUN mkdir -p /opt/aarch64-no-lse/bin && \
+    printf '%s\n' '#!/bin/sh' 'exec /usr/bin/aarch64-linux-gnu-gcc -mno-outline-atomics "$@"' \
+        > /opt/aarch64-no-lse/bin/aarch64-linux-gnu-gcc && \
+    printf '%s\n' '#!/bin/sh' 'exec /usr/bin/aarch64-linux-gnu-g++ -mno-outline-atomics "$@"' \
+        > /opt/aarch64-no-lse/bin/aarch64-linux-gnu-g++ && \
+    chmod +x /opt/aarch64-no-lse/bin/aarch64-linux-gnu-gcc /opt/aarch64-no-lse/bin/aarch64-linux-gnu-g++
+ENV PATH=/opt/aarch64-no-lse/bin:$PATH
+
 # Install CUDA cross compiler
-RUN wget https://developer.download.nvidia.com/compute/cuda/12.6.1/local_installers/cuda-repo-cross-aarch64-ubuntu2204-12-6-local_12.6.1-1_all.deb && \
+RUN wget -q https://developer.download.nvidia.com/compute/cuda/12.6.1/local_installers/cuda-repo-cross-aarch64-ubuntu2204-12-6-local_12.6.1-1_all.deb && \
     dpkg -i cuda-repo-cross-aarch64-ubuntu2204-12-6-local_12.6.1-1_all.deb && \
     cp /var/cuda-repo-cross-aarch64-ubuntu2204-12-6-local/cuda-*-keyring.gpg /usr/share/keyrings/ && \
     apt-get update && \
@@ -32,12 +44,12 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/12.6.1/local_install
     rm cuda-repo-cross-aarch64-ubuntu2204-12-6-local_12.6.1-1_all.deb
 
 # Install cuDNN9 cross
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/cross-linux-aarch64/libcudnn9-cross-aarch64-cuda-12_9.3.0.75-1_all.deb && \
+RUN wget -q https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/cross-linux-aarch64/libcudnn9-cross-aarch64-cuda-12_9.3.0.75-1_all.deb && \
     dpkg -i libcudnn9-cross-aarch64-cuda-12_9.3.0.75-1_all.deb && \
     rm libcudnn9-cross-aarch64-cuda-12_9.3.0.75-1_all.deb
 
 # Install cuBLAS
-RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/libcublas-12-6_12.6.1.4-1_arm64.deb && \
+RUN wget -q https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm64/libcublas-12-6_12.6.1.4-1_arm64.deb && \
     dpkg-deb -x libcublas-12-6_12.6.1.4-1_arm64.deb /tmp/deb-extract && \
     cp /tmp/deb-extract/usr/local/cuda-12.6/targets/aarch64-linux/lib/libcublas.so.12.6.1.4 /usr/local/cuda-12.6/targets/aarch64-linux/lib/ && \
     cp /tmp/deb-extract/usr/local/cuda-12.6/targets/aarch64-linux/lib/libcublas.so.12 /usr/local/cuda-12.6/targets/aarch64-linux/lib/ && \
@@ -46,10 +58,10 @@ RUN wget https://developer.download.nvidia.com/compute/cuda/repos/ubuntu2204/arm
     rm -rf /tmp/deb-extract libcublas-12-6_12.6.1.4-1_arm64.deb
 
 # Install Maven
-RUN wget https://dlcdn.apache.org/maven/maven-3/3.9.12/binaries/apache-maven-3.9.12-bin.tar.gz -P /tmp && \
-    tar xf /tmp/apache-maven-3.9.12-bin.tar.gz -C /opt && \
-    ln -s /opt/apache-maven-3.9.12 /opt/maven && \
-    rm /tmp/apache-maven-3.9.12-bin.tar.gz
+RUN wget -q https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz -P /tmp && \
+    tar xf /tmp/apache-maven-3.9.9-bin.tar.gz -C /opt && \
+    ln -s /opt/apache-maven-3.9.9 /opt/maven && \
+    rm /tmp/apache-maven-3.9.9-bin.tar.gz
 
 ENV JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 ENV JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include
@@ -69,11 +81,13 @@ COPY cppbuild_1.5.11.sh.diff opencv
 RUN patch opencv/cppbuild.sh < opencv/cppbuild_1.5.11.sh.diff
 COPY opencv-cudnn-version.patch opencv
 
+ARG VERSION_DATE=20260819
+
 # Remap the group ID for the opencv maven project
 RUN sed -i.bak '12s/.*/  <groupId>us.ihmc<\/groupId>/' opencv/pom.xml
 
 # Replace the version
-RUN sed -i "s|<version>4.10.0-\${project.parent.version}</version>|<version>4.10.0-\${project.parent.version}-$(date +%Y%m%d)-ihmc</version>|" opencv/pom.xml
+RUN sed -i "s|<version>4.10.0-\${project.parent.version}</version>|<version>4.10.0-\${project.parent.version}-${VERSION_DATE}-ihmc</version>|" opencv/pom.xml
 
 # Build javacpp-presets/opencv
 RUN mvn clean install -Djavacpp.platform.compiler=aarch64-linux-gnu-g++ -Djavacpp.platform.c.compiler=aarch64-linux-gnu-gcc -Djavacpp.platform.extension=-gpu -Djavacpp.platform=linux-arm64 --projects .,opencv

@@ -1,0 +1,179 @@
+name: Build OpenCV JavaCPP
+
+on:
+  workflow_dispatch:
+    inputs:
+      version_date:
+        description: Date stamp in the Maven version (YYYYMMDD)
+        required: true
+        default: "20260819"
+
+env:
+  VERSION_DATE: ${{ inputs.version_date }}
+
+jobs:
+  linux-x86_64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - name: Build
+        run: |
+          export VERSION_DATE="${{ env.VERSION_DATE }}"
+          cd linux-x86_64
+          bash build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencv-linux-x86_64
+          path: linux-x86_64/install/.m2/repository/us/ihmc/opencv
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-x86_64-gpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - name: Build
+        run: |
+          export VERSION_DATE="${{ env.VERSION_DATE }}"
+          cd linux-x86_64-gpu
+          bash build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencv-linux-x86_64-gpu
+          path: linux-x86_64-gpu/install/.m2/repository/us/ihmc/opencv
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-arm64:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - name: Build
+        run: |
+          export VERSION_DATE="${{ env.VERSION_DATE }}"
+          cd linux-arm64
+          bash build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencv-linux-arm64
+          path: linux-arm64/install/.m2/repository/us/ihmc/opencv
+          if-no-files-found: error
+          retention-days: 14
+
+  linux-arm64-gpu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - name: Free disk space
+        run: sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+      - name: Build
+        run: |
+          export VERSION_DATE="${{ env.VERSION_DATE }}"
+          cd l4t-orin
+          bash build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencv-linux-arm64-gpu
+          path: l4t-orin/install/.m2/repository/us/ihmc/opencv
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-x86_64:
+    runs-on: windows-2022
+    timeout-minutes: 180
+    steps:
+      - uses: Jimver/cuda-toolkit@v0.2.24
+        with:
+          cuda: "12.9.0"
+      - name: Install cuDNN
+        shell: bash
+        run: |
+          CUDNN_URL="https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip"
+          curl -L -o cudnn.zip "$CUDNN_URL"
+          unzip cudnn.zip -d cudnn-temp
+          CUDA_PATH="/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.9"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/bin/*.dll "$CUDA_PATH/bin"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/include/*.h "$CUDA_PATH/include"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/lib/x64/*.lib "$CUDA_PATH/lib/x64"
+          rm -rf cudnn.zip cudnn-temp
+      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+      - name: Clone repo to D drive
+        shell: powershell
+        run: |
+          git clone https://github.com/${{ github.repository }}.git D:\b
+          Set-Location D:\b
+          git fetch origin ${{ github.sha }}
+          git checkout ${{ github.sha }}
+      - name: Build
+        shell: cmd
+        env:
+          VERSION_DATE: ${{ env.VERSION_DATE }}
+        run: |
+          git config --global core.longpaths true
+          cd /d D:\b\windows-x86_64
+          "C:\Program Files\Git\bin\bash.exe" build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencv-windows-x86_64
+          path: D:/b/windows-x86_64/install/.m2/repository/us/ihmc/opencv
+          if-no-files-found: error
+          retention-days: 14
+
+  windows-x86_64-gpu:
+    runs-on: windows-2022
+    timeout-minutes: 180
+    steps:
+      - uses: Jimver/cuda-toolkit@v0.2.24
+        with:
+          cuda: "12.9.0"
+      - name: Install cuDNN
+        shell: bash
+        run: |
+          CUDNN_URL="https://developer.download.nvidia.com/compute/cudnn/redist/cudnn/windows-x86_64/cudnn-windows-x86_64-9.9.0.52_cuda12-archive.zip"
+          curl -L -o cudnn.zip "$CUDNN_URL"
+          unzip cudnn.zip -d cudnn-temp
+          CUDA_PATH="/c/Program Files/NVIDIA GPU Computing Toolkit/CUDA/v12.9"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/bin/*.dll "$CUDA_PATH/bin"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/include/*.h "$CUDA_PATH/include"
+          cp cudnn-temp/cudnn-windows-x86_64-9.9.0.52_cuda12-archive/lib/x64/*.lib "$CUDA_PATH/lib/x64"
+          rm -rf cudnn.zip cudnn-temp
+      - uses: ilammy/msvc-dev-cmd@v1
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "8"
+      - name: Clone repo to D drive
+        shell: powershell
+        run: |
+          git clone https://github.com/${{ github.repository }}.git D:\b
+          Set-Location D:\b
+          git fetch origin ${{ github.sha }}
+          git checkout ${{ github.sha }}
+      - name: Build
+        shell: cmd
+        env:
+          VERSION_DATE: ${{ env.VERSION_DATE }}
+        run: |
+          git config --global core.longpaths true
+          cd /d D:\b\windows-x86_64-gpu
+          "C:\Program Files\Git\bin\bash.exe" build.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: opencv-windows-x86_64-gpu
+          path: D:/b/windows-x86_64-gpu/install/.m2/repository/us/ihmc/opencv
+          if-no-files-found: error
+          retention-days: 14

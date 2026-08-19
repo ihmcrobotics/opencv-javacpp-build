@@ -1,3 +1,5 @@
 **/install/
 **/build/
+deploy-*/
+maven-upload/
 .idea/
